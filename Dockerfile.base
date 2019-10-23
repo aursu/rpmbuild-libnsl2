@@ -1,0 +1,11 @@
+FROM aursu/rpmbuild:7-build
+
+USER root
+RUN yum -y install \
+        gettext-devel \
+        glibc-devel \
+        libtirpc-devel \
+    && yum clean all && rm -rf /var/cache/yum
+
+# RUN yum -y --enablerepo=bintray-custom install \
+#    && yum clean all && rm -rf /var/cache/yum

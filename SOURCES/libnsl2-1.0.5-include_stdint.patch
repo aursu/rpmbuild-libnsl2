@@ -1,0 +1,10 @@
+--- libnsl-libnsl-1.0.5/src/nisplus/nis_call.c.include_stdint	2017-06-12 16:05:36.864341686 +0200
++++ libnsl-libnsl-1.0.5/src/nisplus/nis_call.c	2017-06-12 16:05:56.745337017 +0200
+@@ -31,6 +31,7 @@
+ #include <unistd.h>
+ #include <netinet/in.h>
+ #include <arpa/inet.h>
++#include <stdint.h>
+ 
+ #include "libc-lock.h"
+ #include "nis_intern.h"

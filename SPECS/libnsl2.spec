@@ -1,10 +1,6 @@
-%global commit0 4a062cf4180d99371198951e4ea5b4550efd58a3
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-
-
 Name:       libnsl2
-Version:    1.2.0
-Release:    2.20180605git%{shortcommit0}%{?dist}
+Version:    1.1.0
+Release:    2%{?dist}
 Summary:    Public client interface library for NIS(YP) and NIS+
 
 License:    BSD and LGPLv2+
@@ -12,7 +8,7 @@ Group:      System Environment/Libraries
 URL:        https://github.com/thkukuk/libnsl
 
 
-Source0:    https://github.com/thkukuk/libnsl/archive/%{commit0}.tar.gz#/libnsl-%{commit0}.tar.gz
+Source0:    https://github.com/thkukuk/libnsl/archive/libnsl-%{version}.tar.gz#/libnsl-libnsl-%{version}.tar.gz
 
 Patch0: libnsl2-1.0.5-include_stdint.patch
 
@@ -28,14 +24,13 @@ be able to link against TI-RPC for IPv6 support.
 Summary: Development files for libnsl
 Group: Development/Libraries
 Requires: %{name}%{?_isa} = %{version}-%{release}
-Conflicts: glibc-devel < 2.26.9000-40
 
 %description devel
 Development files for libnsl2
 
 
 %prep
-%setup -q -n libnsl-%{commit0}
+%setup -q -n libnsl-libnsl-%{version}
 
 %patch0 -p1 -b .include_stdint
 
@@ -46,8 +41,8 @@ export CFLAGS="%{optflags}"
 autoreconf -fiv
 
 %configure\
-    --libdir=%{_libdir}\
-    --includedir=%{_includedir}
+    --libdir=%{_libdir}/nsl\
+    --includedir=%{_includedir}/nsl\
 
 %make_build
 
@@ -56,34 +51,32 @@ autoreconf -fiv
 
 %make_install
 
-rm %{buildroot}/%{_libdir}/libnsl.a
-rm %{buildroot}/%{_libdir}/libnsl.la
+rm %{buildroot}/%{_libdir}/nsl/libnsl.a
+rm %{buildroot}/%{_libdir}/nsl/libnsl.la
+mv %{buildroot}/%{_libdir}/nsl/pkgconfig %{buildroot}/%{_libdir}
+
+mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
+echo "%{_libdir}/nsl" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 
 %files
-%{_libdir}/libnsl.so.2
-%{_libdir}/libnsl.so.2.0.0
+%dir %{_libdir}/nsl
+%{_libdir}/nsl/libnsl.so.2
+%{_libdir}/nsl/libnsl.so.2.0.0
+%config(noreplace) %{_sysconfdir}/ld.so.conf.d/*
 
 %license COPYING
 
 
 %files devel
-%{_libdir}/libnsl.so
-%{_includedir}/*
+%{_libdir}/nsl/libnsl.so
+%{_includedir}/nsl/
 %{_libdir}/pkgconfig/libnsl.pc
 
 %changelog
-* Tue Jun 05 2018 Matej Mužila <mmuzila@redhat.com> - 1.2.0-2.20181605git4a062cf
-- Update to 1.2.0-2.20181605git4a062cf
-  Resolves: rhbz#1573895
-
-* Fri Feb 09 2018 Matej Mužila <mmuzila@reedhat.com> - 1.2.0-1
-- Update to version 1.2.0
-- Change libdir and includedir
-
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
